@@ -3,9 +3,15 @@ package vista;
 import controlador.InterfaceControlador;
 import modelo.InterfaceModelo;
 import modelo.Tabla;
+import modelo.tareas.Tarea;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 public class Vista implements InterfaceVista {
 
@@ -18,8 +24,31 @@ public class Vista implements InterfaceVista {
     private JPanel prioridad;
     private JPanel completada;
     private JButton aplicar;
+    private VistaTable vistaTabla;
+    private JTextArea desc;
+    private JTextField titulo;
+    private JCheckBox checkBox;
+    private JRadioButton gnAlta;
+    private JRadioButton gnMedia;
+    private JRadioButton gnBaja;
+    private ButtonGroup gPrioridad;
+    private JRadioButton alta;
+    private JRadioButton media;
+    private JRadioButton baja;
+    private JRadioButton pTodas;
+    private JRadioButton nCompletada;
+    private JRadioButton sCompletada;
+    private JRadioButton cTodas;
+    private Tabla tablaTareas;
+    private JScrollPane panelTabla;
 
     public Vista(){}
+    public void setModelo(InterfaceModelo modelo){
+        this.modelo = modelo;
+    }
+    public void setControlador(InterfaceControlador controlador){
+        this.controlador = controlador;
+    }
 
     public void run(){
         //BASE
@@ -28,11 +57,11 @@ public class Vista implements InterfaceVista {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
         //PANEL PRIORIDAD
-        ButtonGroup gPrioridad = new ButtonGroup();
-        JRadioButton alta = new JRadioButton("Alta");
-        JRadioButton media = new JRadioButton("Media");
-        JRadioButton baja = new JRadioButton("Baja");
-        JRadioButton pTodas = new JRadioButton("Todas");
+        gPrioridad = new ButtonGroup();
+        alta = new JRadioButton("Alta");
+        media = new JRadioButton("Media");
+        baja = new JRadioButton("Baja");
+        pTodas = new JRadioButton("Todas");
         gPrioridad.add(alta);
         gPrioridad.add(media);
         gPrioridad.add(baja);
@@ -47,9 +76,9 @@ public class Vista implements InterfaceVista {
 
         //PANEL COMPLETADA
         ButtonGroup gCompletadas = new ButtonGroup();
-        JRadioButton sCompletada = new JRadioButton("Completada");
-        JRadioButton nCompletada = new JRadioButton("No completada");
-        JRadioButton cTodas = new JRadioButton("Todas");
+        sCompletada = new JRadioButton("Completada");
+        nCompletada = new JRadioButton("No completada");
+        cTodas = new JRadioButton("Todas");
         gCompletadas.add(sCompletada);
         gCompletadas.add(nCompletada);
         gCompletadas.add(cTodas);
@@ -66,6 +95,15 @@ public class Vista implements InterfaceVista {
         aplicar = new JButton("Aplicar Filtros");
         panelAplicar.add(aplicar);
 
+        aplicar.addActionListener(actionEvent -> {
+            tablaTareas = new Tabla(aplicarFiltros());
+            vistaTabla = new VistaTable(tablaTareas);
+            vistaTabla.setAutoCreateRowSorter(true);
+            vistaTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            panelTabla.removeAll();
+            panelTabla.add(vistaTabla);
+        });
+
         //PANEL FILTROS
         JPanel filtros = new JPanel(new GridLayout());
         filtros.add(prioridad);
@@ -73,8 +111,23 @@ public class Vista implements InterfaceVista {
         filtros.add(panelAplicar);
 
         //PANEL CUERPO
-        cuerpo = new JPanel();
+        cuerpo = new JPanel(new BorderLayout());
         cuerpo.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Lista de tareas"));
+
+        //tabla
+        tablaTareas = new Tabla(getTareas());
+        vistaTabla = new VistaTable(tablaTareas);
+        vistaTabla.setAutoCreateRowSorter(true);
+        vistaTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        panelTabla = new JScrollPane(vistaTabla);
+        cuerpo.add(panelTabla);
+
+        vistaTabla.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
+            int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
+            Tarea t = tablaTareas.getTarea(fila);
+            setValores(t);
+        });
+
 
         //PANEL INFO
         info = new JPanel();
@@ -83,19 +136,19 @@ public class Vista implements InterfaceVista {
         //titulo
         JPanel pTitulo = new JPanel();
         JLabel textoTitulo = new JLabel("Título: ");
-        JTextField titulo = new JTextField(20);
+        titulo = new JTextField(20);
         pTitulo.add(textoTitulo);
         pTitulo.add(titulo);
         info.add(pTitulo);
         //descripcion
         JPanel pDesc = new JPanel();
         JLabel textoDesc = new JLabel("Descripción: ");
-        JTextArea desc = new JTextArea(4, 40);
+        desc = new JTextArea(4, 40);
         pDesc.add(textoDesc);
         pDesc.add(desc);
         info.add(pDesc);
         //completada
-        JCheckBox checkBox = new JCheckBox("Completada");
+        checkBox = new JCheckBox("Completada");
         info.add(checkBox);
 
         //NUEVA TAREA BOTONES
@@ -110,9 +163,9 @@ public class Vista implements InterfaceVista {
 
         //NUEVA TAREA FILTROS
         ButtonGroup gnPrioridad = new ButtonGroup();
-        JRadioButton gnAlta = new JRadioButton("Alta");
-        JRadioButton gnMedia = new JRadioButton("Media");
-        JRadioButton gnBaja = new JRadioButton("Baja");
+        gnAlta = new JRadioButton("Alta");
+        gnMedia = new JRadioButton("Media");
+        gnBaja = new JRadioButton("Baja");
         gnPrioridad.add(gnAlta);
         gnPrioridad.add(gnMedia);
         gnPrioridad.add(gnBaja);
@@ -126,6 +179,9 @@ public class Vista implements InterfaceVista {
         gridGnPanel.setLayout(new GridLayout());
         gridGnPanel.add(gnPanel);
 
+
+
+
         //AÑADIR PANELES A LA VENTANA
         container.add(filtros);
         container.add(cuerpo);
@@ -133,11 +189,70 @@ public class Vista implements InterfaceVista {
         container.add(gridGnPanel);
         container.add(botonesNueva);
 
+
+
         //VALORES VENTANA
         ventana.setVisible(true);
         //ventana.setSize(650, 500);
         ventana.pack();
         ventana.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         ventana.setLocationRelativeTo(null);
+    }
+
+    private void setValores(Tarea tarea){
+        this.desc.setText(tarea.getDescripcion());
+        this.titulo.setText(tarea.getTitulo());
+        if (tarea.getCompletado()) {
+            checkBox.setSelected(true);
+        }else{
+            checkBox.setSelected(false);
+        }
+        switch (tarea.getNivelPrioridad()){
+            case 1: gnAlta.setSelected(true);
+            break;
+
+            case 2: gnMedia.setSelected(true);
+            break;
+
+            case 3: gnBaja.setSelected(true);
+            break;
+        }
+    }
+
+    private LinkedList<Tarea> aplicarFiltros(){
+
+        if (alta.isSelected()){
+            return aplicarFiltroCompletado(controlador.FiltroPrioridadAlta());
+        }else{
+            if (media.isSelected()){
+                return aplicarFiltroCompletado(controlador.FiltroPrioridadMedia());
+            }else{
+                if (baja.isSelected()){
+                    return aplicarFiltroCompletado(controlador.FiltroPrioridadBaja());
+                }else{
+                    return aplicarFiltroCompletado(controlador.getTareas());
+                }
+            }
+        }
+    }
+    private LinkedList<Tarea> aplicarFiltroCompletado(LinkedList<Tarea> lista){
+        if (nCompletada.isSelected()){
+            return controlador.FiltroNoCompletado(lista);
+        }else{
+            if (sCompletada.isSelected()){
+                return controlador.FiltroCompletado(lista);
+            }else{
+                return controlador.getTareas();
+            }
+        }
+    }
+
+    private void actualizarTabla(LinkedList<Tarea> lista){
+
+    }
+
+
+    private LinkedList<Tarea> getTareas(){
+        return controlador.getTareas();
     }
 }

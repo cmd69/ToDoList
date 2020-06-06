@@ -39,9 +39,13 @@ public class Tabla extends AbstractTableModel {
             return datos.get(fila).getTipoPrioridad();
         }
         if (columna == 2){
-            return datos.get(fila).getDescripcion();
+            return datos.get(fila).getTitulo();
         }
         else return "";
+    }
+
+    public Tarea getTarea(int fila){
+        return datos.get(fila);
     }
 
     @Override
