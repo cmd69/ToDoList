@@ -3,6 +3,7 @@ package modelo;
 import modelo.filtros.Filtro;
 import modelo.filtros.FiltroCompletada;
 import modelo.filtros.FiltroPrioridad;
+import modelo.serializacion.Serializacion;
 import modelo.tareas.Tarea;
 
 
@@ -14,7 +15,7 @@ public class Modelo implements InterfaceModelo{
 
     //CONSTRUCTOR
     public Modelo(){
-        this.tareas = new LinkedList<Tarea>();
+        this.tareas = new LinkedList<>();
     }
 
     //GETTERS
@@ -54,5 +55,7 @@ public class Modelo implements InterfaceModelo{
         this.filtro = new FiltroCompletada(false);
         return filtro.Filtrar(tareas);
     }
+
+
 
 }

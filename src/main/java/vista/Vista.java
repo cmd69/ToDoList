@@ -1,6 +1,7 @@
 package vista;
 
 import controlador.InterfaceControlador;
+import modelo.Exceptions.NoOptionSelected;
 import modelo.InterfaceModelo;
 import modelo.Tabla;
 import modelo.tareas.Tarea;
@@ -11,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class Vista implements InterfaceVista {
@@ -41,6 +43,7 @@ public class Vista implements InterfaceVista {
     private JRadioButton cTodas;
     private Tabla tablaTareas;
     private JScrollPane panelTabla;
+    private Tarea.Prioridad p;
 
     public Vista(){}
     public void setModelo(InterfaceModelo modelo){
@@ -51,6 +54,9 @@ public class Vista implements InterfaceVista {
     }
 
     public void run(){
+        tablaTareas = new Tabla(getTareas());
+        vistaTabla = new VistaTable(tablaTareas);
+
         //BASE
         ventana = new JFrame("To Do List");
         Container container = ventana.getContentPane();
@@ -62,6 +68,7 @@ public class Vista implements InterfaceVista {
         media = new JRadioButton("Media");
         baja = new JRadioButton("Baja");
         pTodas = new JRadioButton("Todas");
+        pTodas.setSelected(true);
         gPrioridad.add(alta);
         gPrioridad.add(media);
         gPrioridad.add(baja);
@@ -79,10 +86,10 @@ public class Vista implements InterfaceVista {
         sCompletada = new JRadioButton("Completada");
         nCompletada = new JRadioButton("No completada");
         cTodas = new JRadioButton("Todas");
+        cTodas.setSelected(true);
         gCompletadas.add(sCompletada);
         gCompletadas.add(nCompletada);
         gCompletadas.add(cTodas);
-        //sCompletada.setSelected(true);
         completada = new JPanel();
         completada.setLayout(new GridLayout(4, 1));
         completada.add(sCompletada);
@@ -95,13 +102,21 @@ public class Vista implements InterfaceVista {
         aplicar = new JButton("Aplicar Filtros");
         panelAplicar.add(aplicar);
 
+        vistaTabla.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
+            //int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
+            /*int fila = vistaTabla.getSelectedRow();
+            if (fila != -1){
+                Tarea t = tablaTareas.getTarea(fila);
+                setValores(t);
+            }*/
+            setValores(getSelectedTarea());
+        });
+
+        //boton aplicar
         aplicar.addActionListener(actionEvent -> {
-            tablaTareas = new Tabla(aplicarFiltros());
-            vistaTabla = new VistaTable(tablaTareas);
-            vistaTabla.setAutoCreateRowSorter(true);
-            vistaTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            panelTabla.removeAll();
-            panelTabla.add(vistaTabla);
+            LinkedList<Tarea> t = aplicarFiltros();
+            limpiarCampos();
+            actualizarTabla(t);
         });
 
         //PANEL FILTROS
@@ -115,19 +130,11 @@ public class Vista implements InterfaceVista {
         cuerpo.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Lista de tareas"));
 
         //tabla
-        tablaTareas = new Tabla(getTareas());
-        vistaTabla = new VistaTable(tablaTareas);
+
         vistaTabla.setAutoCreateRowSorter(true);
         vistaTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         panelTabla = new JScrollPane(vistaTabla);
         cuerpo.add(panelTabla);
-
-        vistaTabla.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
-            int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
-            Tarea t = tablaTareas.getTarea(fila);
-            setValores(t);
-        });
-
 
         //PANEL INFO
         info = new JPanel();
@@ -161,6 +168,32 @@ public class Vista implements InterfaceVista {
         botonesNueva.add(actualiza);
         botonesNueva.add(borrar);
 
+        //LISTENER ACTUALIZAR
+        actualiza.addActionListener(actionEvent -> {
+            //vistaTabla
+
+            try {
+                controlador.guardarCambios();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            actualizarTabla(getTareas());
+        });
+
+        //LISTENER BORRAR
+        borrar.addActionListener(actionEvent -> {
+            controlador.borrarTarea(getSelectedTarea());
+            actualizarTabla(getTareas());
+        });
+
+        nuevo.addActionListener(actionEvent -> {
+            try {
+                nuevaTarea();
+            } catch (NoOptionSelected noOptionSelected) {
+                noOptionSelected.printStackTrace();
+            }
+        });
+
         //NUEVA TAREA FILTROS
         ButtonGroup gnPrioridad = new ButtonGroup();
         gnAlta = new JRadioButton("Alta");
@@ -179,9 +212,6 @@ public class Vista implements InterfaceVista {
         gridGnPanel.setLayout(new GridLayout());
         gridGnPanel.add(gnPanel);
 
-
-
-
         //AÑADIR PANELES A LA VENTANA
         container.add(filtros);
         container.add(cuerpo);
@@ -189,12 +219,10 @@ public class Vista implements InterfaceVista {
         container.add(gridGnPanel);
         container.add(botonesNueva);
 
-
-
         //VALORES VENTANA
         ventana.setVisible(true);
-        //ventana.setSize(650, 500);
-        ventana.pack();
+        ventana.setSize(650, 650);
+        //ventana.pack();
         ventana.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         ventana.setLocationRelativeTo(null);
     }
@@ -221,6 +249,15 @@ public class Vista implements InterfaceVista {
 
     private LinkedList<Tarea> aplicarFiltros(){
 
+        String id = "";
+
+        if (pTodas.isSelected()){
+            return aplicarFiltroCompletado(controlador.getTareas());
+        }else{
+
+        }
+
+
         if (alta.isSelected()){
             return aplicarFiltroCompletado(controlador.FiltroPrioridadAlta());
         }else{
@@ -235,6 +272,7 @@ public class Vista implements InterfaceVista {
             }
         }
     }
+
     private LinkedList<Tarea> aplicarFiltroCompletado(LinkedList<Tarea> lista){
         if (nCompletada.isSelected()){
             return controlador.FiltroNoCompletado(lista);
@@ -242,17 +280,80 @@ public class Vista implements InterfaceVista {
             if (sCompletada.isSelected()){
                 return controlador.FiltroCompletado(lista);
             }else{
-                return controlador.getTareas();
+                return lista;
             }
         }
     }
 
     private void actualizarTabla(LinkedList<Tarea> lista){
-
+        tablaTareas = new Tabla(lista);
+        vistaTabla.setModel(tablaTareas);
     }
 
+    public void nuevaTarea() throws NoOptionSelected {
+        comprobarDatos();
+        controlador.nuevaTarea(titulo.getText(), desc.getText(), checkBox.isSelected(), p);
+        actualizarTabla(controlador.getTareas());
+    }
+
+    public void comprobarDatos() throws NoOptionSelected {
+        JFrame j = new JFrame();
+        if (gnAlta.isSelected()){
+            p = Tarea.Prioridad.ALTA;
+        }else{
+            if (gnMedia.isSelected()){
+                p = Tarea.Prioridad.MEDIA;
+            }else{
+                if (gnBaja.isSelected()){
+                    p = Tarea.Prioridad.BAJA;
+                }else{
+                    new Disclaimer("Ninguna prioridad seleccionada", j, true);
+                    throw new NoOptionSelected();
+                }
+            }
+        }
+
+        if (titulo.getText().isEmpty() || desc.getText().isEmpty()){
+            new Disclaimer("El titulo o la descripción no pueden ser nulos", j, true);
+            throw new NoOptionSelected();
+        }
+    }
+
+    public void limpiarCampos(){
+        titulo.setText(null);
+        desc.setText(null);
+    }
 
     private LinkedList<Tarea> getTareas(){
         return controlador.getTareas();
+    }
+
+    public Tarea getSelectedTarea(){
+        /*int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
+        Tarea t = tablaTareas.getTarea(fila);*/
+
+        Tarea t = null;
+        int fila = vistaTabla.getSelectedRow();
+        if (fila != -1){
+            t = tablaTareas.getTarea(fila);
+        }
+        return t;
+    }
+
+    public void editarTarea(){
+        Tarea t = getSelectedTarea();
+        t = new Tarea(titulo.getText(), desc.getText(), checkBox.isSelected(), getSelectedPrioridad());
+    }
+
+    public Tarea.Prioridad getSelectedPrioridad(){
+        if (gnAlta.isSelected()){
+            return Tarea.Prioridad.ALTA;
+        }else{
+            if (gnMedia.isSelected()){
+                return Tarea.Prioridad.MEDIA;
+            }else{
+                return Tarea.Prioridad.BAJA;
+            }
+        }
     }
 }

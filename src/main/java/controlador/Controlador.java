@@ -1,15 +1,18 @@
 package controlador;
 
 import modelo.InterfaceModelo;
+import modelo.serializacion.Serializacion;
 import modelo.tareas.CrearTareas;
 import modelo.tareas.FabricaTareas;
 import modelo.tareas.Tarea;
 import vista.InterfaceVista;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Controlador implements InterfaceControlador {
+public class Controlador implements Serializable, InterfaceControlador {
 
     private InterfaceModelo modelo;
     private InterfaceVista vista;
@@ -32,7 +35,18 @@ public class Controlador implements InterfaceControlador {
         return modelo.filtrarPrioridadBaja(modelo.getTareas());
     }
 
+    public void nuevaTarea(String titulo, String desc, boolean c, Tarea.Prioridad prioridad){
+        Tarea t = fabricaTareas.getTarea(titulo, desc, c, prioridad);
+        modelo.NuevaTarea(t);
+    }
 
+    public void borrarTarea(Tarea tarea){
+        modelo.BorrarTarea(tarea);
+    }
+
+    public void guardarCambios() throws IOException {
+        Serializacion.serializacionGuardar(modelo);
+    }
 
     public LinkedList<Tarea> FiltroCompletado(LinkedList<Tarea> list){
         return modelo.filtrarCompletados(list);

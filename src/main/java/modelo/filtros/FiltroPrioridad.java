@@ -14,11 +14,19 @@ public class FiltroPrioridad implements Filtro {
     @Override
     public LinkedList<Tarea> Filtrar(LinkedList<Tarea> tareas) {
         LinkedList<Tarea> filtradas = new LinkedList<>();
+        System.out.println(prioridad.getPrioridad());
         for (Tarea elem :tareas) {
-            if (elem.getTipoPrioridad().equals(prioridad)){
+            if (elem.getTipoPrioridad().equals(prioridad.getPrioridad())){
                 filtradas.add(elem);
             }
         }
+        for(Tarea elem : filtradas){
+            System.out.println(elem.getTitulo());
+        }
+        if (filtradas.isEmpty()){
+            System.out.println("VACIO");
+        }
         return filtradas;
+
     }
 }

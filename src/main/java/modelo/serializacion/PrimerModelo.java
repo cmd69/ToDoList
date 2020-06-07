@@ -26,13 +26,21 @@ public class PrimerModelo {
     }
 
     public void primerosElementos(InterfaceModelo m){
-        Tarea.Prioridad prioridad = Tarea.Prioridad.ALTA;
-        Tarea.Prioridad prioridad2 = Tarea.Prioridad.BAJA;
-        Tarea tarea = new Tarea("Comprar", "Necesito agua", false, prioridad);
+        Tarea tarea = new Tarea("Comprar", "Necesito agua", false, Tarea.Prioridad.BAJA);
         Tarea tarea2 = new Tarea("Salir", "Necesit oED", true, Tarea.Prioridad.BAJA);
+        Tarea tarea3 = new Tarea("Beber", "Agua", true, Tarea.Prioridad.ALTA);
+        Tarea tarea4 = new Tarea("Consumir", "LA Droga", false, Tarea.Prioridad.ALTA);
+        Tarea tarea5 = new Tarea("Robar", "en el cine", true, Tarea.Prioridad.MEDIA);
+        Tarea tarea6 = new Tarea("Poner", "a todos a bailar", false, Tarea.Prioridad.MEDIA);
+        Tarea tarea7 = new Tarea("Saber", "Quien hizo la sopa de murciélago", false, Tarea.Prioridad.MEDIA);
 
         m.NuevaTarea(tarea);
         m.NuevaTarea(tarea2);
+        m.NuevaTarea(tarea3);
+        m.NuevaTarea(tarea4);
+        m.NuevaTarea(tarea5);
+        m.NuevaTarea(tarea6);
+        m.NuevaTarea(tarea7);
 
     }
 }
