@@ -1,11 +1,14 @@
 package modelo.serializacion;
 
 import modelo.InterfaceModelo;
+import modelo.tareas.Tarea;
 
 import java.io.*;
+import java.util.LinkedList;
 
-public class Serializacion {
-    public static void serializacionGuardar(InterfaceModelo modelo) throws IOException {
+public class Serializacion implements Serializable {
+
+    public static void serializacionGuardar(LinkedList<Tarea> tarea) throws IOException {
         FileReader fichero = null;
         try {
             try {
@@ -20,7 +23,7 @@ public class Serializacion {
         System.out.println("metodo guardae");
         FileOutputStream fos = new FileOutputStream("src/main/java/Tareas.bin");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(modelo);
+        oos.writeObject(tarea);
         oos.close();
     }
 
@@ -41,5 +44,15 @@ public class Serializacion {
         InterfaceModelo modelo = (InterfaceModelo) ois.readObject();
         ois.close();
         return modelo;
+    }
+
+    public static LinkedList<Tarea> cargarAgenda(String nombreFichero) throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream("src/main/java/" + nombreFichero);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+
+        System.out.println("agenda cargada");
+        LinkedList<Tarea> lista = (LinkedList<Tarea>) ois.readObject();
+        ois.close();
+        return lista;
     }
 }

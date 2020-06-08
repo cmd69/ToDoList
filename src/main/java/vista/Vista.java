@@ -103,19 +103,17 @@ public class Vista implements InterfaceVista {
         panelAplicar.add(aplicar);
 
         vistaTabla.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
-            //int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
-            /*int fila = vistaTabla.getSelectedRow();
-            if (fila != -1){
-                Tarea t = tablaTareas.getTarea(fila);
-                setValores(t);
-            }*/
-            setValores(getSelectedTarea());
+            try {
+                setValores(getSelectedTarea());
+            } catch (NoOptionSelected noOptionSelected) {
+                noOptionSelected.printStackTrace();
+            }
         });
 
         //boton aplicar
         aplicar.addActionListener(actionEvent -> {
             LinkedList<Tarea> t = aplicarFiltros();
-            limpiarCampos();
+            //limpiarCampos();
             actualizarTabla(t);
         });
 
@@ -170,14 +168,13 @@ public class Vista implements InterfaceVista {
 
         //LISTENER ACTUALIZAR
         actualiza.addActionListener(actionEvent -> {
-            //vistaTabla
-
+            editarTarea();
+            actualizarTabla(getTareas());
             try {
                 controlador.guardarCambios();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            actualizarTabla(getTareas());
         });
 
         //LISTENER BORRAR
@@ -227,23 +224,27 @@ public class Vista implements InterfaceVista {
         ventana.setLocationRelativeTo(null);
     }
 
-    private void setValores(Tarea tarea){
-        this.desc.setText(tarea.getDescripcion());
-        this.titulo.setText(tarea.getTitulo());
-        if (tarea.getCompletado()) {
-            checkBox.setSelected(true);
+    private void setValores(Tarea tarea) throws NoOptionSelected {
+        if (tarea != null){
+            this.desc.setText(tarea.getDescripcion());
+            this.titulo.setText(tarea.getTitulo());
+            if (tarea.getCompletado()) {
+                checkBox.setSelected(true);
+            }else{
+                checkBox.setSelected(false);
+            }
+            switch (tarea.getNivelPrioridad()){
+                case 1: gnAlta.setSelected(true);
+                break;
+
+                case 2: gnMedia.setSelected(true);
+                break;
+
+                case 3: gnBaja.setSelected(true);
+                break;
+            }
         }else{
-            checkBox.setSelected(false);
-        }
-        switch (tarea.getNivelPrioridad()){
-            case 1: gnAlta.setSelected(true);
-            break;
-
-            case 2: gnMedia.setSelected(true);
-            break;
-
-            case 3: gnBaja.setSelected(true);
-            break;
+            limpiarCampos();
         }
     }
 
@@ -329,20 +330,19 @@ public class Vista implements InterfaceVista {
     }
 
     public Tarea getSelectedTarea(){
-        /*int fila = vistaTabla.convertRowIndexToView(vistaTabla.getSelectedRow());
-        Tarea t = tablaTareas.getTarea(fila);*/
 
         Tarea t = null;
         int fila = vistaTabla.getSelectedRow();
-        if (fila != -1){
+        if (fila > -1){
             t = tablaTareas.getTarea(fila);
         }
         return t;
     }
 
     public void editarTarea(){
-        Tarea t = getSelectedTarea();
-        t = new Tarea(titulo.getText(), desc.getText(), checkBox.isSelected(), getSelectedPrioridad());
+        if (getSelectedTarea() != null){
+            getSelectedTarea().setValores(titulo.getText(), desc.getText(), checkBox.isSelected(), getSelectedPrioridad());
+        }
     }
 
     public Tarea.Prioridad getSelectedPrioridad(){

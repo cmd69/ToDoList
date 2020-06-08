@@ -45,7 +45,7 @@ public class Controlador implements Serializable, InterfaceControlador {
     }
 
     public void guardarCambios() throws IOException {
-        Serializacion.serializacionGuardar(modelo);
+        Serializacion.serializacionGuardar(getTareas());
     }
 
     public LinkedList<Tarea> FiltroCompletado(LinkedList<Tarea> list){

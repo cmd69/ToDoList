@@ -1,6 +1,8 @@
 package modelo.tareas;
 
-public class Tarea {
+import java.io.Serializable;
+
+public class Tarea implements Serializable {
     private String titulo;
     private String descripcion;
     private boolean completado;
@@ -51,11 +53,15 @@ public class Tarea {
     public boolean getCompletado(){
         return completado;
     }
-
     public void setCompletado(boolean b){
         this.completado = b;
     }
-
+    public void setValores(String titulo, String descripcion, boolean completado, Prioridad prioridad ){
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.completado = completado;
+        this.prioridad = prioridad;
+    }
 
 
 }

@@ -3,10 +3,11 @@ package modelo;
 import modelo.tareas.Tarea;
 
 import javax.swing.table.AbstractTableModel;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class Tabla extends AbstractTableModel {
+public class Tabla extends AbstractTableModel implements Serializable {
     final List<String> cabeceras = Arrays.asList("Completado", "Prioridad", "Título");
     List<Tarea> datos;
 

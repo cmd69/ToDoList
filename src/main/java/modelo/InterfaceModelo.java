@@ -14,4 +14,5 @@ public interface InterfaceModelo {
     LinkedList<Tarea> filtraNoCompletados(LinkedList<Tarea> tareas);
     boolean BorrarTarea(Tarea tarea);
     void Completar(Tarea tarea, boolean b);
+    void setTarea(LinkedList<Tarea> tarea);
 }

@@ -3,13 +3,13 @@ package modelo;
 import modelo.filtros.Filtro;
 import modelo.filtros.FiltroCompletada;
 import modelo.filtros.FiltroPrioridad;
-import modelo.serializacion.Serializacion;
 import modelo.tareas.Tarea;
 
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Modelo implements InterfaceModelo{
+public class Modelo implements InterfaceModelo, Serializable {
     private LinkedList<Tarea> tareas;
     private Filtro filtro;
 
@@ -32,6 +32,9 @@ public class Modelo implements InterfaceModelo{
     }
     public void Completar(Tarea tarea, boolean b){
         tarea.setCompletado(b);
+    }
+    public void setTarea(LinkedList<Tarea> tarea){
+        this.tareas = tarea;
     }
 
     //FILTERS
