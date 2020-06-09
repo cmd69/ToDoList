@@ -7,7 +7,6 @@ import modelo.tareas.FabricaTareas;
 import modelo.tareas.Tarea;
 import vista.InterfaceVista;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;

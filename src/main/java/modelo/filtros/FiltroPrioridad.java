@@ -20,12 +20,6 @@ public class FiltroPrioridad implements Filtro {
                 filtradas.add(elem);
             }
         }
-        for(Tarea elem : filtradas){
-            System.out.println(elem.getTitulo());
-        }
-        if (filtradas.isEmpty()){
-            System.out.println("VACIO");
-        }
         return filtradas;
 
     }

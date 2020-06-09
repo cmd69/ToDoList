@@ -6,6 +6,7 @@ import modelo.InterfaceModelo;
 import modelo.Tabla;
 import modelo.tareas.Tarea;
 
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -103,11 +104,7 @@ public class Vista implements InterfaceVista {
         panelAplicar.add(aplicar);
 
         vistaTabla.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
-            try {
-                setValores(getSelectedTarea());
-            } catch (NoOptionSelected noOptionSelected) {
-                noOptionSelected.printStackTrace();
-            }
+            setValores(getSelectedTarea());
         });
 
         //boton aplicar
@@ -128,7 +125,6 @@ public class Vista implements InterfaceVista {
         cuerpo.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Lista de tareas"));
 
         //tabla
-
         vistaTabla.setAutoCreateRowSorter(true);
         vistaTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         panelTabla = new JScrollPane(vistaTabla);
@@ -169,18 +165,19 @@ public class Vista implements InterfaceVista {
         //LISTENER ACTUALIZAR
         actualiza.addActionListener(actionEvent -> {
             editarTarea();
-            actualizarTabla(getTareas());
             try {
                 controlador.guardarCambios();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            actualizarTabla(aplicarFiltros());
         });
 
         //LISTENER BORRAR
         borrar.addActionListener(actionEvent -> {
             controlador.borrarTarea(getSelectedTarea());
-            actualizarTabla(getTareas());
+            actualizarTabla(aplicarFiltros());
+            limpiarCampos();
         });
 
         nuevo.addActionListener(actionEvent -> {
@@ -189,6 +186,8 @@ public class Vista implements InterfaceVista {
             } catch (NoOptionSelected noOptionSelected) {
                 noOptionSelected.printStackTrace();
             }
+            LinkedList<Tarea> t = aplicarFiltros();
+            actualizarTabla(t);
         });
 
         //NUEVA TAREA FILTROS
@@ -224,40 +223,24 @@ public class Vista implements InterfaceVista {
         ventana.setLocationRelativeTo(null);
     }
 
-    private void setValores(Tarea tarea) throws NoOptionSelected {
+    public void setValores(Tarea tarea) {
         if (tarea != null){
-            this.desc.setText(tarea.getDescripcion());
-            this.titulo.setText(tarea.getTitulo());
-            if (tarea.getCompletado()) {
-                checkBox.setSelected(true);
+            titulo.setText(tarea.getTitulo());
+            desc.setText(tarea.getDescripcion());
+            checkBox.setSelected(tarea.getCompletado());
+            if (tarea.getNivelPrioridad() == 1){
+                gnAlta.setSelected(true);
             }else{
-                checkBox.setSelected(false);
+                if (tarea.getNivelPrioridad() == 2){
+                    gnMedia.setSelected(true);
+                }else{
+                    gnBaja.setSelected(true);
+                }
             }
-            switch (tarea.getNivelPrioridad()){
-                case 1: gnAlta.setSelected(true);
-                break;
-
-                case 2: gnMedia.setSelected(true);
-                break;
-
-                case 3: gnBaja.setSelected(true);
-                break;
-            }
-        }else{
-            limpiarCampos();
         }
     }
 
-    private LinkedList<Tarea> aplicarFiltros(){
-
-        String id = "";
-
-        if (pTodas.isSelected()){
-            return aplicarFiltroCompletado(controlador.getTareas());
-        }else{
-
-        }
-
+    public LinkedList<Tarea> aplicarFiltros(){
 
         if (alta.isSelected()){
             return aplicarFiltroCompletado(controlador.FiltroPrioridadAlta());
@@ -274,7 +257,7 @@ public class Vista implements InterfaceVista {
         }
     }
 
-    private LinkedList<Tarea> aplicarFiltroCompletado(LinkedList<Tarea> lista){
+    public LinkedList<Tarea> aplicarFiltroCompletado(LinkedList<Tarea> lista){
         if (nCompletada.isSelected()){
             return controlador.FiltroNoCompletado(lista);
         }else{
@@ -286,7 +269,7 @@ public class Vista implements InterfaceVista {
         }
     }
 
-    private void actualizarTabla(LinkedList<Tarea> lista){
+    public void actualizarTabla(LinkedList<Tarea> lista){
         tablaTareas = new Tabla(lista);
         vistaTabla.setModel(tablaTareas);
     }
@@ -294,7 +277,7 @@ public class Vista implements InterfaceVista {
     public void nuevaTarea() throws NoOptionSelected {
         comprobarDatos();
         controlador.nuevaTarea(titulo.getText(), desc.getText(), checkBox.isSelected(), p);
-        actualizarTabla(controlador.getTareas());
+        //actualizarTabla(controlador.getTareas());
     }
 
     public void comprobarDatos() throws NoOptionSelected {
@@ -325,7 +308,7 @@ public class Vista implements InterfaceVista {
         desc.setText(null);
     }
 
-    private LinkedList<Tarea> getTareas(){
+    public LinkedList<Tarea> getTareas(){
         return controlador.getTareas();
     }
 
