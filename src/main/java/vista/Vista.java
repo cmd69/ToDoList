@@ -148,13 +148,11 @@ public class Vista implements InterfaceVista {
         checkBox = new JCheckBox("Completada");
         pTitulo.add(checkBox);
 
-
         info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Detalles de la tarea"));
         info.add(pTitulo);
         info.add(pDesc);
-
 
         //NUEVA TAREA BOTONES
         JPanel botonesNueva = new JPanel();
@@ -192,6 +190,7 @@ public class Vista implements InterfaceVista {
             }
             LinkedList<Tarea> t = aplicarFiltros();
             actualizarTabla(t);
+            limpiarCampos();
         });
 
         //NUEVA TAREA FILTROS
@@ -225,6 +224,15 @@ public class Vista implements InterfaceVista {
         //ventana.pack();
         ventana.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         ventana.setLocationRelativeTo(null);
+        ventana.addWindowListener(new java.awt.event.WindowAdapter(){
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                try {
+                    controlador.guardarCambios();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void setValores(Tarea tarea) {

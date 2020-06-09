@@ -2,8 +2,6 @@ package main;
 
 import controlador.Controlador;
 import modelo.Modelo;
-import modelo.serializacion.PrimerModelo;
-import modelo.serializacion.Serializacion;
 import vista.Vista;
 
 import java.io.IOException;
