@@ -131,26 +131,30 @@ public class Vista implements InterfaceVista {
         cuerpo.add(panelTabla);
 
         //PANEL INFO
-        info = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        info.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Detalles de la tarea"));
         //titulo
         JPanel pTitulo = new JPanel();
         JLabel textoTitulo = new JLabel("Título: ");
         titulo = new JTextField(20);
         pTitulo.add(textoTitulo);
         pTitulo.add(titulo);
-        info.add(pTitulo);
+
         //descripcion
         JPanel pDesc = new JPanel();
         JLabel textoDesc = new JLabel("Descripción: ");
         desc = new JTextArea(4, 40);
         pDesc.add(textoDesc);
         pDesc.add(desc);
-        info.add(pDesc);
         //completada
         checkBox = new JCheckBox("Completada");
-        info.add(checkBox);
+        pTitulo.add(checkBox);
+
+
+        info = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Detalles de la tarea"));
+        info.add(pTitulo);
+        info.add(pDesc);
+
 
         //NUEVA TAREA BOTONES
         JPanel botonesNueva = new JPanel();

@@ -11,7 +11,7 @@ public interface InterfaceModelo {
     LinkedList<Tarea> filtrarPrioridadMedia(LinkedList<Tarea> tareas);
     LinkedList<Tarea> filtrarPrioridadBaja(LinkedList<Tarea> tareas);
     LinkedList<Tarea> filtrarCompletados(LinkedList<Tarea> tareas);
-    LinkedList<Tarea> filtraNoCompletados(LinkedList<Tarea> tareas);
+    LinkedList<Tarea> filtrarNoCompletados(LinkedList<Tarea> tareas);
     boolean BorrarTarea(Tarea tarea);
     void Completar(Tarea tarea, boolean b);
     void setTarea(LinkedList<Tarea> tarea);

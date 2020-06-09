@@ -13,8 +13,9 @@ public class Serializacion implements Serializable {
             try {
                 fichero = new FileReader("src/main/java/Tareas.bin");
             } finally {
-                if(fichero != null)
+                if(fichero != null){
                     fichero.close();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -26,11 +27,16 @@ public class Serializacion implements Serializable {
     }
 
     public static LinkedList<Tarea> cargarAgenda(String nombreFichero) throws IOException, ClassNotFoundException {
-        FileInputStream fis = new FileInputStream("src/main/java/" + nombreFichero);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-
-        LinkedList<Tarea> lista = (LinkedList<Tarea>) ois.readObject();
-        ois.close();
-        return lista;
+        LinkedList<Tarea> lista = new LinkedList<>();
+        try {
+            FileInputStream fis = new FileInputStream("src/main/java/" + nombreFichero);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            lista = (LinkedList<Tarea>) ois.readObject();
+            ois.close();
+            return lista;
+        }catch (FileNotFoundException ex){
+            File file = new File("src/main/java/"+nombreFichero);
+            return lista;
+        }
     }
 }

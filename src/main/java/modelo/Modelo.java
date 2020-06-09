@@ -54,7 +54,7 @@ public class Modelo implements InterfaceModelo, Serializable {
         this.filtro = new FiltroCompletada(true);
         return filtro.Filtrar(tareas);
     }
-    public LinkedList<Tarea> filtraNoCompletados(LinkedList<Tarea> tareas){
+    public LinkedList<Tarea> filtrarNoCompletados(LinkedList<Tarea> tareas){
         this.filtro = new FiltroCompletada(false);
         return filtro.Filtrar(tareas);
     }

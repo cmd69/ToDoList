@@ -52,7 +52,7 @@ public class Controlador implements Serializable, InterfaceControlador {
     }
 
     public LinkedList<Tarea> FiltroNoCompletado(LinkedList<Tarea> list){
-        return modelo.filtraNoCompletados(list);
+        return modelo.filtrarNoCompletados(list);
     }
 
     @Override
